@@ -50,13 +50,105 @@ server <- function(input, output){
     
   })
   
-  output$ts_plot3 <- renderPlot({
-    fit <- g_trends %>%
-      model(TSLM(Interest ~ trend()))
-    
-    fit %>% 
-      forecast() %>% 
-      autoplot(g_trends)
+  # output$ts_plot3 <- renderPlot({
+  #   fit <- g_trends %>%
+  #     model(TSLM(Interest ~ trend()))
+  #   
+  #   fit %>% 
+  #     forecast() %>% 
+  #     autoplot(g_trends)
+  # })
+
+#simple models 
+  output$ts_plot_naive <- renderPlot({ 
+    if(input$naive_model){
+      fit <- g_trends %>%
+        model(NAIVE(Interest))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+ })
+
+  output$ts_plot_snaive <- renderPlot({ 
+    if(input$snaive_model){
+      fit <- g_trends %>%
+        model(SNAIVE(Interest ~ lag()))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
   })
   
+  output$ts_plot_mean_model <- renderPlot({ 
+    if(input$mean_model){
+      fit <- g_trends %>%
+        model(MEAN(Interest))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+  })
+  
+  output$ts_plot_drift_model <- renderPlot({ 
+    if(input$drift_model){
+      fit <- g_trends %>%
+        model(RW(Interest ~ drift()))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+  })
+
+#ETS models
+  output$ts_plot_ets_holt <- renderPlot({ 
+    if(input$holts_model){
+      fit <- g_trends %>%
+        model(ETS(Interest ~ error("A") + trend("A") + season("N")))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+  })
+  
+  output$ts_plot_ets_holt_winter <- renderPlot({ 
+    if(input$holts_winter_model){
+      fit <- g_trends %>%
+        model(ETS(Interest ~ error("A") + trend("A") + season("A")))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+  })
+  
+#arima models
+  
+  output$ts_plot_arima_auto <- renderPlot({ 
+    if(input$ARIMA_Auto){
+      fit <- g_trends %>%
+        model(ARIMA(Interest))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+  })
+  
+  output$ts_plot_arima_man <- renderPlot({ 
+    if(input$ARIMA_man){
+      fit <- g_trends %>%
+        model(ARIMA(Interest ~ pdq(1,1,0) + PDQ(1,1,0)))
+      
+      fit %>% 
+        forecast(h = input$horizon) %>% 
+        autoplot(g_trends)
+    }
+  })
+   
 }
